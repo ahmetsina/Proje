@@ -1,0 +1,14 @@
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/install.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/list_install_components.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/rebuild_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/dlib_.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/install/strip.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/install/local.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/CMakeFiles/edit_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/rebuild_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/install.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/list_install_components.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/dlib.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/install/local.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/install/strip.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/tools/python/build/dlib_build/CMakeFiles/edit_cache.dir

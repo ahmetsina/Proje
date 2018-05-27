@@ -1,0 +1,326 @@
+import os
+from flask import Flask, request, redirect, url_for, flash, render_template, send_from_directory
+from werkzeug.utils import secure_filename
+import cv2, csv,sys, math
+from sklearn import svm
+import numpy as np
+from numpy.linalg import norm
+from sklearn.externals import joblib
+import openface
+import dlib
+from skimage import feature
+from imutils.face_utils import FaceAligner
+
+UPLOAD_FOLDER = './images/test_org_images'
+
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','JPG'])
+
+app = Flask(__name__,
+            instance_relative_config=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['STATIC_FOLDER'] = "images"
+
+predictor_model = "shape_predictor_68_face_landmarks.dat"
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(predictor_model)
+fa = FaceAligner(predictor, desiredFaceWidth=64)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def crop_face(img):
+    file_name = img # sys.argv[1]
+    predictor_model = "shape_predictor_68_face_landmarks.dat"
+    face_detector = dlib.get_frontal_face_detector()
+    face_pose_predictor = dlib.shape_predictor(predictor_model)
+    face_aligner = openface.AlignDlib(predictor_model)
+    # Load the image
+    image = cv2.imread(file_name)
+
+    # Run the HOG face detector on the image data
+    detected_faces = face_detector(image, 1)
+    print("Found {} faces in the image file {}".format(len(detected_faces), file_name))
+
+    # Loop through each face we found in the image
+    #for i, face_rect in enumerate(detected_faces):
+
+        # Detected faces are returned as an object with the coordinates
+        # of the top, left, right and bottom edges
+    #    print("- Face #{} found at Left: {} Top: {} Right: {} Bottom: {}".format(i, face_rect.left(), face_rect.top(), face_rect.right(), face_rect.bottom()))
+    #    face_rect = dlib.rectangle(face_rect.left()-20, face_rect.top()-20, face_rect.right()+20, face_rect.bottom()+20)
+        # Get the the face's pose
+    #    pose_landmarks = face_pose_predictor(image, face_rect)
+        # Use openface to calculate and perform the face alignment
+    #    alignedFace = face_aligner.align(64, image, face_rect, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+
+        # Save the aligned image to a file
+    #    fname, ext = os.path.splitext(file_name)
+    #    print(fname + "_aligned_cropped.jpg")
+    #    cv2.imwrite("{}_aligned_cropped.jpg".format(fname),alignedFace)
+    #    cv2.waitKey(0)
+    return len(detected_faces)
+
+
+def facecrop(image):
+
+    facedata = "./cascades/haarcascade_frontalface_alt2.xml"
+    cascade = cv2.CascadeClassifier(facedata)
+    print(facedata)
+    print(image)
+    img = cv2.imread(image)
+    if img is not None:
+        minisize = (img.shape[1],img.shape[0])
+        miniframe = cv2.resize(img, minisize)
+
+        faces = cascade.detectMultiScale(miniframe)
+
+        for f in faces:
+            x, y, w, h = [ v for v in f ]
+            cv2.rectangle(img, (x,y), (x+w,y+h), (255,255,255))
+
+            sub_face = img[y:y+h, x:x+w]
+            sub_face = cv2.resize(sub_face, (64,64))
+            fname, ext = os.path.splitext(image)
+
+            cv2.imwrite(fname+"_cropped"+ext, sub_face)
+    else:
+        print("Resim yuklenemedi")
+
+
+
+    return
+
+def hog(img):
+    gx = cv2.Sobel(img, cv2.CV_32F, 1, 0)
+    gy = cv2.Sobel(img, cv2.CV_32F, 0, 1)
+    mag, ang = cv2.cartToPolar(gx, gy)
+    bin_n = 16 # Number of bins
+    bin = np.int32(bin_n*ang/(2*np.pi))
+
+    bin_cells = []
+    mag_cells = []
+
+    cellx = celly = 8
+
+    for i in range(0,int(img.shape[0]/celly)):
+        for j in range(0,int(img.shape[1]/cellx)):
+            bin_cells.append(bin[i*celly : i*celly+celly, j*cellx : j*cellx+cellx])
+            mag_cells.append(mag[i*celly : i*celly+celly, j*cellx : j*cellx+cellx])
+
+    hists = [np.bincount(b.ravel(), m.ravel(), bin_n) for b, m in zip(bin_cells, mag_cells)]
+    hist = np.hstack(hists)
+
+    # transform to Hellinger kernel
+    eps = 1e-7
+    hist /= hist.sum() + eps
+    hist = np.sqrt(hist)
+    hist /= norm(hist) + eps
+
+    return hist
+
+def img_man(image_name):
+    test_image = cv2.imread(image_name, 0)
+    test_image_hog = hog(test_image)
+    return test_image_hog
+
+
+class LocalBinaryPatterns:
+	def __init__(self, numPoints, radius):
+		# store the number of points and radius
+		self.numPoints = numPoints
+		self.radius = radius
+
+	def describe(self, image, eps=1e-7):
+		# compute the Local Binary Pattern representation
+		# of the image, and then use the LBP representation
+		# to build the histogram of patterns
+		lbp = feature.local_binary_pattern(image, self.numPoints,
+			self.radius, method="uniform")
+		(hist, _) = np.histogram(lbp.ravel(),
+			bins=np.arange(0, self.numPoints + 3),
+			range=(0, self.numPoints + 2))
+
+		# normalize the histogram
+		hist = hist.astype("float")
+		hist /= (hist.sum() + eps)
+
+		# return the histogram of Local Binary Patterns
+		return hist
+
+def a_crop(imagePath):
+    img = cv2.imread(imagePath)
+    dets = detector(img, 1)
+
+    num_faces = len(dets)
+    if num_faces == 0:
+        print("Sorry, there were no faces found in '{}'".format(imagePath))
+
+    else:
+        faces = dlib.full_object_detections()
+        for detection in dets:
+            faces.append(predictor(img, detection))
+        filename = str(imagePath).split("/")[-1]
+        print(filename)
+        fname, ext = os.path.splitext(filename)
+        # It is also possible to get a single chip
+        image = dlib.get_face_chip(img, faces[0],size=64,padding=0.40)
+        #file = "/Users/ahmetsina/PycharmProjects/GenderAnalyzer/FeatureExtraction/images/" +fname+ext
+        cv2.imwrite("./images/test_org_images/{}_aligned_cropped.jpg".format(fname),image)
+	#cv2.imwrite(fname + ext, image)
+        #os.system("mv {} FeatureExtraction/images/a_test_images/".format(fname+ext))
+
+        cv2.waitKey()
+    return num_faces
+
+# initialize the local binary patterns descriptor along with
+# the data and label lists
+def img_lbp(imgPath):
+    desc = LocalBinaryPatterns(48,16)
+    image = cv2.imread(imgPath)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    hist = desc.describe(gray)
+    return hist
+
+
+def prediction(model,img_src,hog=False):
+    if hog:
+        result = model.predict(np.array(img_man(image_name=img_src)).reshape(1, -1))[0]
+    else:
+        result = model.predict(np.array(img_lbp(img_src)).reshape(1, -1))[0]
+    return result
+
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            #flash('No file part')
+            return redirect(url_for("no_upload"))
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(UPLOAD_FOLDER+"/"+filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            facecrop(UPLOAD_FOLDER+"/"+filename)
+            if a_crop(UPLOAD_FOLDER+"/"+filename) != 0 and a_crop(UPLOAD_FOLDER+"/"+filename) == 1 :
+                return redirect(url_for('uploaded_file',
+                                    filename=filename))
+            else:
+                return redirect(url_for('upload_error'))
+
+    return '''
+    <!doctype html>
+    <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Resim Dosyasini Yukleyin</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <body class="container">
+    <br>
+    <h1>Resim Dosyasini Yukleyin</h1>
+    <hr>
+    <form method=post enctype=multipart/form-data>
+      <p><input type=file name=file accept=".jpg, .jpeg">
+         <input type=submit value=Upload>
+    </form>
+    </body>
+    '''
+@app.route("/uploaded_file")
+def uploaded_file():
+
+    filename = request.args['filename']
+    fname, ext = os.path.splitext(UPLOAD_FOLDER + "/" + filename)
+
+    loaded_model_hog_rf = joblib.load("../hog_rf.pkl")
+    loaded_model_hog_svm = joblib.load("../hog_svm.pkl")
+    loaded_model_lbp_rf = joblib.load("../lbp_rf.pkl")
+    loaded_model_lbp_svm = joblib.load("../lbp_svm.pkl")
+
+    #loaded_model_hog_rf_a = joblib.load("../hog_rf_a.pkl")
+    #loaded_model_hog_svm_a = joblib.load("../hog_svm_a.pkl")
+    #loaded_model_lbp_rf_a = joblib.load("../lbp_rf_a.pkl")
+    #loaded_model_lbp_svm_a = joblib.load("../lbp_svm_a.pkl")
+    print("LAAAN: " + fname + "_cropped" + ext)
+    cropped_img_src = fname + "_cropped" + ext
+    aligned_img_src = fname + "_aligned_cropped" + ext
+
+    result_hog_rf = prediction(loaded_model_hog_rf,cropped_img_src, hog=True)
+    result_hog_svm = prediction(loaded_model_hog_svm,cropped_img_src,hog=True)
+    result_lbp_rf = prediction(loaded_model_lbp_rf,cropped_img_src, hog=False)
+    result_lbp_svm = prediction(loaded_model_lbp_svm,cropped_img_src, hog=False)
+    result_hog_rf_aligned = prediction(loaded_model_hog_rf, aligned_img_src, hog=True)
+    result_hog_svm_aligned = prediction(loaded_model_hog_svm, aligned_img_src, hog=True)
+    result_lbp_rf_aligned = prediction(loaded_model_lbp_rf, aligned_img_src, hog=False)
+    result_lbp_svm_aligned = prediction(loaded_model_lbp_svm, aligned_img_src, hog=False)
+
+    predict_hog_rf = round(max(loaded_model_hog_rf.predict_proba(np.array(img_man(image_name=cropped_img_src)).reshape(1, -1))[0])*100,2)
+    predict_hog_svm = round(max(loaded_model_hog_svm.predict_proba(np.array(img_man(image_name=cropped_img_src)).reshape(1, -1))[0])*100,2)
+    predict_hog_svm_aligned = round(max(loaded_model_hog_svm.predict_proba(np.array(img_man(image_name=aligned_img_src)).reshape(1, -1))[0])*100, 2)
+    predict_hog_rf_aligned = round(max(loaded_model_hog_rf.predict_proba(np.array(img_man(image_name=aligned_img_src)).reshape(1, -1))[0])*100, 2)
+    predict_lbp_svm = round(max(loaded_model_lbp_svm.predict_proba(np.array(img_lbp(cropped_img_src)).reshape(1, -1))[0])*100, 2)
+    predict_lbp_rf = round(max(loaded_model_lbp_rf.predict_proba(np.array(img_lbp(cropped_img_src)).reshape(1, -1))[0])*100, 2)
+    predict_lbp_svm_aligned = round(max(loaded_model_lbp_svm.predict_proba(np.array(img_lbp(aligned_img_src)).reshape(1, -1))[0])*100, 2)
+    predict_lbp_rf_aligned = round(max(loaded_model_lbp_rf.predict_proba(np.array(img_lbp(aligned_img_src)).reshape(1, -1))[0])*100, 2)
+
+    results = {
+        "result_hog_svm": result_hog_svm,
+        "result_lbp_svm": result_lbp_svm,
+        "result_hog_rf": result_hog_rf,
+        "result_lbp_rf": result_lbp_rf,
+        "result_hog_svm_aligned": result_hog_svm_aligned,
+        "result_lbp_svm_aligned": result_lbp_svm_aligned,
+        "result_hog_rf_aligned": result_hog_rf,
+        "result_lbp_rf_aligned": result_lbp_rf_aligned,
+        "predict_hog_rf": predict_hog_rf,
+        "predict_hog_svm": predict_hog_svm,
+        "predict_hog_svm_aligned": predict_hog_svm_aligned,
+        "predict_hog_rf_aligned": predict_hog_rf_aligned,
+        "predict_lbp_svm": predict_lbp_svm,
+        "predict_lbp_rf": predict_lbp_rf,
+        "predict_lbp_svm_aligned": predict_lbp_svm_aligned,
+        "predict_lbp_rf_aligned": predict_lbp_rf_aligned,
+    }
+
+
+    full_filename = fname.replace("./images/test_org_images","images/test_org_images") + "_cropped" + ext
+    full_filename_aligned = fname.replace("./images/test_org_images","images/test_org_images") + "_aligned_cropped" + ext
+
+    os.system("cp {} static/".format(full_filename))
+    os.system("cp {} static/".format(full_filename_aligned))
+
+    #loaded_model_hog_svm.predict(np.array(img_man(image_name=cropped_img_src)).reshape(1, -1))[0]
+    return render_template('result.html', value = results , image = full_filename.split("/")[2], image2 = full_filename_aligned.split("/")[2])
+
+
+
+@app.route("/upload_error")
+def upload_error():
+    return '''
+        <!doctype html>
+        <title>Yukleme Hatasi</title>
+        <h1>Yuklemis oldugunuz goruntu istenilen sekilde degil. Lutfen sadece bir yuz iceren goruntu yukleyiniz. </h1>
+        
+        </form>
+        '''
+
+
+@app.route("/no_upload")
+def no_upload():
+    return '''
+        <!doctype html>
+        <title>Yukleme Hatasi</title>
+        <h1>Herhangi bir goruntu yuklemediniz.</h1>
+
+        </form>
+        '''
+app.run(debug=True, host="0.0.0.0")

@@ -1,0 +1,14 @@
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/install.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/list_install_components.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/install/strip.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/install/local.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/rebuild_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/CMakeFiles/edit_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/rebuild_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/edit_cache.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/install.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/list_install_components.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/dlib.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/dlib_shared.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/install/local.dir
+/var/www/FlaskApp/FlaskApp/dlib-19.6/build/dlib/CMakeFiles/install/strip.dir

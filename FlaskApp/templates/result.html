@@ -1,0 +1,99 @@
+<!doctype html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Sonuc</title>
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    </head>
+<body class="container">
+
+{% if value %}
+  <h1 style="display: inline-block; float: left;">Sonuc</h1>
+ 
+
+<hr>
+<div class="text-center">
+</div>
+
+<br>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Method \ Image Preprocessing </th>
+      <th scope="col">Aligned (Dlib)</th>
+      <th scope="col">Not Aligned(Haarcascade)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <th scope="row">Kirpilmis  Goruntuler</th>
+      <td>    <img class="rounded" width="256" height="256" src="static/{{image2}}"></img>
+          </td>
+      <td>    <img class="rounded" width="256" height="256" src="static/{{image}}"></img>
+</td>
+    </tr>
+    <tr>
+    <tr>
+      <th scope="row">HOG + SVM</th>
+      <td>{% if value["result_hog_svm_aligned"] == "2.0" %}
+        Kadın (%{{value["predict_hog_svm_aligned"]}})
+    {% else %}
+        Erkek (%{{value["predict_hog_svm_aligned"]}})
+    {% endif %}
+          </td>
+      <td>{% if value["result_hog_svm"] == "2.0" %}
+        Kadın (%{{ value["predict_hog_svm"]}})
+    {% else %}
+        Erkek (%{{value["predict_hog_svm"]}})
+    {% endif %}</td>
+    </tr>
+    <tr>
+      <th scope="row">HOG + RandomForest</th>
+      <td>{% if value["result_hog_rf_aligned"] == "2.0" %}
+        Kadın (%{{value["predict_hog_rf_aligned"]}})
+    {% else %}
+        Erkek (%{{value["predict_hog_rf_aligned"]}})
+    {% endif %}</td>
+      <td>{% if value["result_hog_rf"] == "2.0" %}
+        Kadın (%{{value["predict_hog_rf"]}})
+    {% else %}
+        Erkek (%{{value["predict_hog_rf"]}})
+    {% endif %}</td>
+    </tr>
+    <tr>
+      <th scope="row">LBP  + SVM</th>
+      <td>{% if value["result_lbp_svm_aligned"] == "2.0" %}
+        Kadın (%{{value["predict_lbp_svm_aligned"]}})
+    {% else %}
+        Erkek (%{{value["predict_lbp_svm_aligned"]}})
+    {% endif %}</td>
+      <td>{% if value["result_lbp_svm"] == "2.0" %}
+        Kadın (%{{value["predict_lbp_svm"]}})
+    {% else %}
+        Erkek (%{{value["predict_lbp_svm"]}})
+    {% endif %}</td>
+    </tr>
+  <tr>
+      <th scope="row">LBP + RandomForest</th>
+      <td >{% if value["result_lbp_rf_aligned"] == "2.0" %}
+        Kadın (%{{value["predict_lbp_rf_aligned"]}})
+    {% else %}
+        Erkek (%{{value["predict_lbp_rf_aligned"]}})
+    {% endif %}</td>
+      <td>{% if value["result_lbp_rf"] == "2.0" %}
+        Kadın (%{{value["predict_lbp_rf"]}})
+    {% else %}
+        Erkek (%{{value["predict_lbp_rf"]}})
+    {% endif %}</td>
+    </tr>
+  </tbody>
+</table>
+
+{% else %}
+  <h1>Hello World!</h1>
+{% endif %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
