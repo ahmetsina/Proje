@@ -65,9 +65,10 @@ Uygulama
 
 4. Sonrasında proje klasöründe `$ virtualenv venv ` komutunu çalıştırarak proje için sanal ortamınızı oluşturunuz.
 5. `$ source venv/bin/activate` komutu ile sanal ortamınızı aktifleştiriniz.
-6. `$ pip install -r requirements.txt ` komutunu çalıştırırsanız **requirements.txt** dosyasında yer alan proje için gerekli olan bağımlılıkları indirmiş ve kurmuş olursunuz. Bu aşamayı isterseniz kendiniz tek tek elle de halledebilirsiniz.
-7. Bağımlıklıklar başarıyla kurulduktan sonra `$ python main.py` komutunu çalıştırarak localinizde uygulamayı çalıştırabilirsiniz.
-8. Sanal ortamı deaktive etmek için `$ deactivate ` komutunu çalıştırınız.
+6.  [Openface sayfasındaki](http://cmusatyalab.github.io/openface/) kurulum yönergelerini takip edip Openface kurulumunu yapınız.
+7. `$ pip install -r requirements.txt ` komutunu çalıştırırsanız **requirements.txt** dosyasında yer alan proje için gerekli olan bağımlılıkları indirmiş ve kurmuş olursunuz. Bu aşamayı isterseniz kendiniz tek tek elle de halledebilirsiniz.
+8. Bağımlıklıklar başarıyla kurulduktan sonra `$ python main.py` komutunu çalıştırarak localinizde uygulamayı çalıştırabilirsiniz.
+9. Sanal ortamı deaktive etmek için `$ deactivate ` komutunu çalıştırınız.
 
 
 
