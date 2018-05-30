@@ -38,7 +38,7 @@ Proje 1 dersindeki öznitelik çıkarımı ve karşılaştırma çalışmamız �
 Proje 1 dersindeki çalışmalar MatLab programı üzerinde prototip olarak yapılmıştı. Bu dönem bunu öncelikle Web üzerinde çalışan bir uygulamaya dökmeyi planlıyorum. Bu yüzden kullanacağım geliştirme ortamı tamamen değişecek. İzleyeceğim adımlar ise şöyle:
 
 1. **Geliştirme Ortamının Kurulması**
-    * Python 2.7'nin kurulması (Kullanacağım programlama dili. Hali hazırda şuanki ortamımda mevcut.)
+    * Python 3'ün kurulması (Kullanacağım programlama dili. Hali hazırda şuanki ortamımda mevcut.)
     * JetBrains PyCharm IDE (Python yazarken kullanacağım IDE)
 2. **Verileri Tekrardan İşleme**
     * Verilerin Python ortamında tekrardan işlenmesi. Bunun için ham görüntülerin işleme geçirilmemiş halini alıp 64x64px şekline getirerek eğitime hazır hale getireceğim.
@@ -55,11 +55,19 @@ Proje 1 dersindeki çalışmalar MatLab programı üzerinde prototip olarak yap�
     - Yüklenen resmin arkaplanda öznitelikleri çıkarılıp SVM sınıflandırıcısına sokulacak ve geri dönen sonucu sayfaya yansıtacak.
 
 
-Eğer projem bu aşamalara gelir, başarılı bir şekilde çalışır ve yeteri kadar zaman olursa bu projeyi **Digital Ocean**'dan aldığım sanal sunucuya yükleyip orada koşturarak sonuç olarak json verisi döndürmeyi planlıyorum.
-Böylelikle mobil uygulama yaparken yapacağım post işleminden dönen cevabı direk olarak uygulamada gösterebileceğim.
+Uygulama
+---------
 
+1. Python 3'ü indirip kurmak için [buradaki yönergeleri takip ediniz](https://www.python.org/download/releases/3.0/?).
+2. Python 3'ü kurduğunuzda **pip** paket yöneticisi de beraberinde kurulmuş olacaktır.
+3. Komut satırından 
+   `$ sudo pip install virtualenv` komutuyla izole edilmiş sanal ortam aracını indirip kurunuz. 
 
-
+4. Sonrasında proje klasöründe `$ virtualenv venv ` komutunu çalıştırarak proje için sanal ortamınızı oluşturunuz.
+5. `$ source venv/bin/activate` komutu ile sanal ortamınızı aktifleştiriniz.
+6. `$ pip install -r requirements.txt ` komutunu çalıştırırsanız **requirements.txt** dosyasında yer alan proje için gerekli olan bağımlılıkları indirmiş ve kurmuş olursunuz. Bu aşamayı isterseniz kendiniz tek tek elle de halledebilirsiniz.
+7. Bağımlıklıklar başarıyla kurulduktan sonra `$ python main.py` komutunu çalıştırarak localinizde uygulamayı çalıştırabilirsiniz.
+8. Sanal ortamı deaktive etmek için `$ deactivate ` komutunu çalıştırınız.
 
 
 
